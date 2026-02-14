@@ -172,7 +172,9 @@ NOTES:
  *   Rating: 2
  */
 int allEvenBits(int x) {
-  return 2;
+  int mask = 0x55 | (0x55 << 8);
+  mask = mask | (mask << 16);
+  return ((x & mask) ^ mask) + 1;
 }
 /*
  * bitParity - returns 1 if x contains an odd number of 0's
@@ -182,7 +184,9 @@ int allEvenBits(int x) {
  *   Rating: 4
  */
 int bitParity(int x) {
-  return 2;
+  int mask = 1;
+  mask = mask & x;
+  return mask;
 }
 /* 
  * bitXor - x^y using only ~ and & 
