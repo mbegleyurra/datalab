@@ -184,7 +184,7 @@ int allEvenBits(int x) {
  *   Rating: 4
  */
 int bitParity(int x) {
-  int mask = 1;
+  int mask = 0x1;
   mask = mask & x;
   return mask;
 }
@@ -196,7 +196,7 @@ int bitParity(int x) {
  *   Rating: 1
  */
 int bitXor(int x, int y) {
-  return 2;
+  return ~(~(x & (~(x & y))) & ~(y & (~(x & b))));
 }
 /* 
  * leastBitPos - return a mask that marks the position of the
@@ -207,7 +207,7 @@ int bitXor(int x, int y) {
  *   Rating: 2 
  */
 int leastBitPos(int x) {
-  return 2;
+  return x & (~x + 1);
 }
 /* 
  * replaceByte(x,n,c) - Replace byte n in x with c
@@ -219,7 +219,16 @@ int leastBitPos(int x) {
  *   Rating: 3
  */
 int replaceByte(int x, int n, int c) {
-  return 2;
+  // n*8 = n << 3 This will be used to shift the bytes into position
+  int shift = n << 3;
+  // Create a mask to clear the byte at the desired position
+  int mask = 0xFF << shift;
+  // Clear the byte at the desired position
+  int cleared_x = x & ~mask;
+  // Set that byte to c
+  int shifted_c = c << shift;
+
+  return cleared_x | shifted_c;
 }
 /* 
  * TMax - return maximum two's complement integer 
@@ -228,7 +237,8 @@ int replaceByte(int x, int n, int c) {
  *   Rating: 1
  */
 int tmax(void) {
-  return 2;
+  // With 32 bits the first bit should be 0 so:
+  return ~(1 << 31);
 }
 /* 
  * fitsBits - return 1 if x can be represented as an 
