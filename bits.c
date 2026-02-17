@@ -174,7 +174,9 @@ NOTES:
 int allEvenBits(int x) {
   int mask = 0x55 | (0x55 << 8);
   mask = mask | (mask << 16);
-  return ((x & mask) ^ mask) + 1;
+  // The (x & mask) ^ mask will be 0 if all the even bits are 1 and the !
+  //  will return 1 in that case otherwise it will return 0
+  return !((x & mask) ^ mask);
 }
 /*
  * bitParity - returns 1 if x contains an odd number of 0's
@@ -196,7 +198,7 @@ int bitParity(int x) {
  *   Rating: 1
  */
 int bitXor(int x, int y) {
-  return ~(~(x & (~(x & y))) & ~(y & (~(x & b))));
+  return ~(~(x & (~(x & y))) & ~(y & (~(x & y))));
 }
 /* 
  * leastBitPos - return a mask that marks the position of the
@@ -250,7 +252,13 @@ int tmax(void) {
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
-  return 2;
+  /*
+  Since we are on a 32 bit system then we can shift the number 32 - n to the left
+  and it will get rid of the bits that exceed the n number of bits.
+  */
+  int shift = 32 + ~n + 1;
+  // Shift left and then right to see if we get the same number back
+  return !((x << shift) >> shift ^ x);
 }
 /* 
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -261,7 +269,8 @@ int fitsBits(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-    return 2;
+  // The MSB will be copied to every bit here so x = 0 +, x = -1 -
+  return x >> n;
 }
 /* 
  * isEqual - return 1 if x == y, and 0 otherwise 
@@ -271,7 +280,7 @@ int divpwr2(int x, int n) {
  *   Rating: 2
  */
 int isEqual(int x, int y) {
-  return 2;
+  return !(x ^ y);
 }
 /* 
  * isPositive - return 1 if x > 0, return 0 otherwise 
@@ -281,7 +290,8 @@ int isEqual(int x, int y) {
  *   Rating: 3
  */
 int isPositive(int x) {
-  return 2;
+  // & !!x checks if x is 0 and ! x >> 31 checks if x is negative
+  return !(x >> 31) & !!x;
 }
 /* 
  * subOK - Determine if can compute x-y without overflow
